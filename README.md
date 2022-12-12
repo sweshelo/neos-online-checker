@@ -15,3 +15,13 @@
 以後、
 - `add`を入力するとユーザ名を聞かれるので、入力してリスト追加
 - `sta`を入力するとリストに追加済みのユーザステータス取得
+
+## エラーが出た場合
+```
+.\main.ps1: File main.ps1 cannot be loaded.
+The file main.ps1 is not digitally signed. You cannot run this script on the current system. For more information about running scripts and setting execution policy, see about_Execution_Policies at https://go.microsoft.com/fwlink/?LinkID=135170.
+```
+上記のエラーが出た場合は、以下のコマンドで一時的に実行制限を緩和させる。
+```
+set-executionPolicy Bypass -Scope Process
+```
