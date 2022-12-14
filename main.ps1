@@ -43,7 +43,7 @@ function Get_Status(){
           $color = 'Green'
         }
         "Away"{
-          $color = 'Orange'
+          $color = 'DarkYellow'
         }
         "Busy"{
           $color = 'Red'
