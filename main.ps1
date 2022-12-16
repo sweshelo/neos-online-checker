@@ -53,17 +53,19 @@ function Get_Status(){
         }
       }
       Write-Host "" $status.onlineStatus -ForegroundColor $color;
-      if( $status.onlineStatus -ne "Offline" -and $status.activeSessions ){
-        if ($status.outputDevice -eq 'VR'){ Write-Host "VRでログイン中" }
-        if ($status.outputDevice -eq 'Headless'){ Write-Host "Headlessサーバとしてログイン中" }
-        $status.activeSessions | %{
-          $session = $_;
-          Write-Host " " $_.name "にいます";
-          Write-Host "   [セッション内のユーザ一覧]";
-          $_.sessionUsers | %{
-            $color = 'White';
-            if ( $session.hostUserId -eq $_.userID ) { $color = 'Yellow' };
-            Write-Host "    -" $_.username -ForegroundColor $color;
+      if( $status.onlineStatus -ne "Offline" ){
+        if ( $status.outputDevice -eq 'VR' ){ Write-Host "VRでログイン中" }
+        if ( $status.outputDevice -eq 'Headless' ){ Write-Host "Headlessサーバとしてログイン中" }
+        if ( $status.activeSessions ) {
+          $status.activeSessions | %{
+            $session = $_;
+            Write-Host " " $_.name "にいます";
+            Write-Host "   [セッション内のユーザ一覧]";
+            $_.sessionUsers | %{
+              $color = 'White';
+              if ( $session.hostUserId -eq $_.userID ) { $color = 'Yellow' };
+              Write-Host "    -" $_.username -ForegroundColor $color;
+            }
           }
         }
       }else{
