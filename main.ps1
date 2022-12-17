@@ -33,19 +33,43 @@ function Get_Status(){
     $userid = $_;
     $result = Invoke-WebRequest "${domain}/users/${userid}/status";
     $result.Content | ConvertFrom-Json | %{
-      Write-Host $userid $_.onlineStatus
-      if( $_.onlineStatus -ne "Offline" -and $_.activeSessions ){
-        $_.activeSessions | %{
-          $session = $_
-          Write-Host " " $_.name "にいます"
-          Write-Host "   [セッション内のユーザ一覧]"
-          $_.sessionUsers | %{
-            $color = 'White';
-            if ( $session.hostUserId -eq $_.userID ) { $color = 'Yellow' };
-            # if ( ! $_.isPresent ) { $color = 'DarkGray' };
-            Write-Host "    -" $_.username -ForegroundColor $color;
+      $status = $_
+      Write-Host $userid -NoNewline
+      Switch($status.onlineStatus){
+        "Offline"{
+          $color = 'DarkGray'
+        }
+        "Online"{
+          $color = 'Green'
+        }
+        "Away"{
+          $color = 'DarkYellow'
+        }
+        "Busy"{
+          $color = 'Red'
+        }
+        "Invisible"{
+          $color = 'DarkRed'
+        }
+      }
+      Write-Host "" $status.onlineStatus -ForegroundColor $color;
+      if( $status.onlineStatus -ne "Offline" ){
+        if ( $status.outputDevice -eq 'VR' ){ Write-Host "VRでログイン中" }
+        if ( $status.outputDevice -eq 'Headless' ){ Write-Host "Headlessサーバとしてログイン中" }
+        if ( $status.activeSessions ) {
+          $status.activeSessions | %{
+            $session = $_;
+            Write-Host " " $_.name "にいます";
+            Write-Host "   [セッション内のユーザ一覧]";
+            $_.sessionUsers | %{
+              $color = 'White';
+              if ( $session.hostUserId -eq $_.userID ) { $color = 'Yellow' };
+              Write-Host "    -" $_.username -ForegroundColor $color;
+            }
           }
         }
+      }else{
+        Write-Host "[最終オンライン]" $status.laststatuschange.AddHours(9).ToString("MM/dd HH:mm");
       }
     }
     Write-Host
@@ -65,7 +89,7 @@ if (Test-Path ./userList.txt ) {
 }
 
 While ($True){
-  ""
+  "";
   $command = Read-Host "Command ";
   switch($command){
     "help" {
